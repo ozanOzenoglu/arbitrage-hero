@@ -1,9 +1,16 @@
 import firebase_admin
-from firebase_admin import credentials as cretentials
-from firebase_admin import messaging as messaging
+from firebase_admin import credentials
+from firebase_admin import messaging
 import os
-from base.crypto_engine import symbols
+import sys
+module_path = os.path.dirname(os.path.abspath(__file__))
+module_path = module_path.split('api')[0]
+print("{:s} is added to sys paths".format(str(module_path)))
+sys.path.append(module_path)
+from api.base.crypto_engine import symbols
 from api.base.crypto_engine.MessageApi.debug import *
+cred = credentials.Certificate(symbols.FCM_KEY_PATH)
+firebase_admin.initialize_app(cred)
 
 
 class FCM:

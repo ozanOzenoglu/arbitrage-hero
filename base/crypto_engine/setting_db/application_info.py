@@ -5,7 +5,7 @@ from base.crypto_engine.setting_db.setting_message import Message
 class ApplicationInfo(Info):
     def __init__(self,arbitrage_options:dict,simulator_enabled:bool,table_service_enabled:bool,koineks_handler_options:dict,
                  btcturk_handler_options:dict,koineks_acc_info:dict,btcturk_acc_info:dict,koineks_ob_fetcher_op:dict,
-                 ob_fresh_guy_enabled:bool,manager_options,api_service_options, statistic_service_enabled:bool):
+                 ob_fresh_guy_enabled:bool,manager_options,api_service_options, statistic_service_enabled:bool,mail_settings:dict):
         self.__arbitrage_options = arbitrage_options
         self.__simulator_enabled = simulator_enabled
         self.__table_service_enabled = table_service_enabled
@@ -18,8 +18,11 @@ class ApplicationInfo(Info):
         self.__manager_options = manager_options
         self.__api_service_options = api_service_options
         self.__statistic_service_enabled = statistic_service_enabled
+        self.__mail_settings= mail_settings
         self._json_message = ApplicationInfoMsg(self)
 
+    def get_mail_settings(self):
+        return self.__mail_settings
 
     def get_ob_fresh_guy_enabled(self):
         return self.__ob_fresh_guy_enabled
@@ -139,6 +142,7 @@ class ApplicationInfo(Info):
 
     @staticmethod
     def json_to_instance(data:dict):
+        mail_settings = data.__getitem__("mail_settings")
         statistic_service_enabled = data.__getitem__("statistic_service_enabled")
         api_service_options = data.__getitem__("api_service_options")
         manager_options = data.__getitem__("manager_options")
@@ -153,7 +157,7 @@ class ApplicationInfo(Info):
         koineks_ob_ops = data.__getitem__("koineks_ob_fetcher_options")
         return ApplicationInfo(arbitrage_options,simulator_enabled,table_service_enabled,
                                koineks_handler_options,btcturk_handler_options,koineks_acc_info,btcturk_acc_info,koineks_ob_ops,
-                               ob_fresh_guy_enabled,manager_options,api_service_options,statistic_service_enabled)
+                               ob_fresh_guy_enabled,manager_options,api_service_options,statistic_service_enabled,mail_settings)
 
 
 

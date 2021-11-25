@@ -4,6 +4,7 @@ import threading
 import json
 
 from api.base.crypto_engine.utils import helper
+from api.base.crypto_engine.utils import mail_sender
 from api.base.crypto_engine.utils.arbitrage import Arbitrage
 from api.base.crypto_engine.utils.trader import Trader
 from api.base.crypto_engine.setting_db.opportunity_info import OpportunityInfo
@@ -69,7 +70,7 @@ class OpportunityFinderNG:
                 jsonStr = json.dumps(jsonMsg)
                 simple_msg = op.to_simple_msg()
                 try:
-                    helper.send_mail("notify.arbitrage@gmail.com",simple_msg)
+                    mail_sender.send_mail("notify.arbitrage@gmail.com",simple_msg)
                 except Exception as e:
                     error("Error during sending email notification e: {:s}".format(str(e)))
                 try:
@@ -111,8 +112,8 @@ class OpportunityFinderNG:
             return
 
         if percent > self.__alarm_percent:
-            now = int(time().time())
-            if(now - self.__last_notification_time > symbols.NOTIFICATION_TIME_SECOND_THRESHOLD):
+            now = int(time.time())
+            if(self.__last_notification_time is None or now - self.__last_notification_time > symbols.NOTIFICATION_TIME_SECOND_THRESHOLD):
                 self.__last_notification_time = now
                 self.notify_subscribers(new_op)
                 self.start_arbitrage(new_op)

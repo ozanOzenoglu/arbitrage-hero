@@ -503,9 +503,13 @@ def __upload_order_book(order_book_path: str):
 def send_mail(to:str,msg:str):
 
     try:
+        app_info  = Config.get_manager_config()
+        mail_settings = app_info.get_mail_settings()
+        user_name = mail_settings.__getitem__("username")
+        password = mail_settings.__getitem__("password")
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
-        server.login("btcturk.ozan@gmail.com", "Ozandoruk1989")
+        server.login(user_name, password)
         msg = msg.replace(":"," ")
         server.sendmail("btcturk.ozan@gmail.com",  to, msg)
     except Exception as e:

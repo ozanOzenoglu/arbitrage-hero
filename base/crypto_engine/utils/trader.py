@@ -15,7 +15,7 @@ from base.crypto_engine.engine.transaction_engine import Operation, TransactionE
 
 
 class Trader(Consumer):
-
+    LAST_TRADER_TIME = None
     def __init__(self):
         debug("Trader is initalised")
         self.__transaction_engine = TransactionEngine()
@@ -136,7 +136,7 @@ class Trader(Consumer):
                                                                                           str(
                                                                                               self.__buying_market_first_symbol)))
                 FCM.send_topic_message("Arbitrage Trader","INSUFFICENT MONEY FOR TRADER for: " + self.__buying_market_first_symbol,"trader sufficient money", "new_opportunity")
-                return
+                self.__money_to_spend = float(second_symbol_balance)
 
             balance_before_buy = free_balance.__getitem__(self.__buying_market_first_symbol)
             self.__buying_exchange.set_second_balance_info(second_symbol_balance)
@@ -262,13 +262,15 @@ class Trader(Consumer):
         # cex.privatePostGetAddress(cex.extend({'currency':'XRP'}))
         self.__buying_market_first_symbol = self.__buying_exchange.get_first_symbol()
         self.__buying_market_second_symbol = self.__buying_exchange.get_second_symbol()
-        print("buying market fs: {:s}".format(str(self.__buying_market_first_symbol)))
-        print("buying market ss {:s}".format(str(self.__buying_market_second_symbol)))
+        print("buying market first symbol: {:s}".format(str(self.__buying_market_first_symbol)))
+        print("buying market second symbol {:s}".format(str(self.__buying_market_second_symbol)))
 
     def start_trader(self):
-        if (self.__money_to_spend >= 1000):
-            error("Invest Money Guard is HEERREEE , money to wish to spend {:f}".format(float(self.__money_to_spend)))
+        if (Trader.LAST_TRADER_TIME is None):
+             Trader.LAST_TRADER_TIME = time.time()
+        elif(time.time() - Trader.LAST_TRADER_TIME < 1000 * 60):
             return
+            
 
         operation_list = []
         get_first_symbol_balance_op = Operation.create_check_balance(self.__buying_exchange.related_market())
